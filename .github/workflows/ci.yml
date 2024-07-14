@@ -56,14 +56,6 @@ jobs:
     needs: build
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download the built artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: spring-boot-app
-
       - name: Pull and run Docker image on EC2
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -72,6 +64,6 @@ jobs:
         run: |
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
           docker pull $DOCKER_USERNAME/$DOCKER_IMAGE_NAME
-          docker stop app || true
-          docker rm app || true
-          docker run -d --name app -p 8080:8080 $DOCKER_USERNAME/$DOCKER_IMAGE_NAME
+          docker stop server || true
+          docker rm server || true
+          docker run -d --name server -p 8080:8080 $DOCKER_USERNAME/$DOCKER_IMAGE_NAME
