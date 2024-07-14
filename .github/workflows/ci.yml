@@ -56,12 +56,16 @@ jobs:
     needs: build
 
     steps:
-      - name: Set up Docker
+      - name: Check if Docker is installed
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo systemctl enable docker
+          if ! command -v docker &> /dev/null
+          then
+            echo "Docker could not be found, installing..."
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sh get-docker.sh
+          else
+            echo "Docker is already installed"
+          fi
 
       - name: Log in to Docker Hub
         env:
