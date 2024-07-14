@@ -48,22 +48,43 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker tag $DOCKER_IMAGE_NAME $DOCKER_USERNAME/$DOCKER_IMAGE_NAME
-          docker push $DOCKER_USERNAME/$DOCKER_IMAGE_NAME
+          docker tag for-our-lives-diary $DOCKER_USERNAME/for-our-lives-diary
+          docker push $DOCKER_USERNAME/for-our-lives-diary
 
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build
 
     steps:
-      - name: Pull and run Docker image on EC2
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
+
+      - name: Log in to Docker Hub
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_IMAGE_NAME: 'for-our-lives-diary'
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+      - name: Pull and run Docker image on EC2
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker pull $DOCKER_USERNAME/$DOCKER_IMAGE_NAME
+          docker pull $DOCKER_USERNAME/for-our-lives-diary
           docker stop server || true
           docker rm server || true
-          docker run -d --name server -p 8080:8080 $DOCKER_USERNAME/$DOCKER_IMAGE_NAME
+          docker run -d --name server -p 8080:8080 \
+            -e SPRING_PROFILES_ACTIVE=prod \
+            -e DB_HOST=$DB_HOST \
+            -e DB_PORT=$DB_PORT \
+            -e DB_NAME=$DB_NAME \
+            -e DB_USERNAME=$DB_USERNAME \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            $DOCKER_USERNAME/for-our-lives-diary
