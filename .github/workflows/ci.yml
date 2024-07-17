@@ -81,6 +81,9 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           docker pull $DOCKER_USERNAME/for-our-lives-diary
           docker stop server || true
@@ -92,4 +95,7 @@ jobs:
             -e DB_NAME=$DB_NAME \
             -e DB_USERNAME=$DB_USERNAME \
             -e DB_PASSWORD=$DB_PASSWORD \
+            -e GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID \
+            -e GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET \
+            -e JWT_SECRET=$JWT_SECRET \
             $DOCKER_USERNAME/for-our-lives-diary
