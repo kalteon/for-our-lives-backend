@@ -23,11 +23,11 @@ spring:
       client:
         registration:
           google:
-            client-id: ${DOTENV[GOOGLE_CLIENT_ID]}
-            client-secret: ${DOTENV[GOOGLE_CLIENT_SECRET]}
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: profile, email
   jwt:
-    secret: ${DOTENV[JWT_SECRET]}
+    secret: ${JWT_SECRET}
     expiration: 3600000
 
 ---
