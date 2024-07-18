@@ -18,6 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.h2database:h2' // 로컬 개발용
     runtimeOnly 'mysql:mysql-connector-java' // RDS용
+    implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
